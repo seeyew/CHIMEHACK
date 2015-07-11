@@ -24,8 +24,9 @@ SubscriberSchema.statics.sendMessage = function(message, url, callback) {
                 message: 'Couldn\'t find any subscribers!'
             });
         }
-
+        console.log(message.body); 
         // Otherwise send messages to all subscribers
+        console.log('subscribers who match ' + docs.length);
         sendMessages(docs);
     });
 
@@ -46,7 +47,8 @@ SubscriberSchema.statics.sendMessage = function(message, url, callback) {
             client.sendMessage(options, function(err, response) {
                 if (err) {
                     // Just log it for now
-                    console.error(err);
+                    console.log("For some reason we can't send it " + err)
+                	console.error(err);
                 } else {
                     // Log the last few digits of a phone number
                     var masked = subscriber.phone.substr(0, 
