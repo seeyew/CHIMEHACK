@@ -1,5 +1,5 @@
 var Subscriber = require('../models/Subscriber');
-
+var fs = require('fs');
 // Create a function to handle Twilio SMS / MMS webhook requests
 exports.webhook = function(request, response) {
 
@@ -22,10 +22,11 @@ exports.webhook = function(request, response) {
             newSubscriber.save(function(err, newSub) {
                 if (err || !newSub) 
                     return respond('We couldn\'t sign you up - try again.');
-
+                //Signed up the user, let's see if they want to subscribe or not
+                processMessage(sub);
                 // We're signed up but not subscribed - prompt to subscribe
-                respond('Thanks for contacting us! Text "subscribe" to ' +
-                    + 'receive updates via text message.');
+                //respond('Thanks for contacting us! Text "subscribe" to '
+                 //   + 'receive updates via text message.');
             });
         } else {
             // For an existing user, process any input message they sent and
@@ -42,31 +43,160 @@ exports.webhook = function(request, response) {
 
         // Conditional logic to do different things based on the command from
         // the user
-        if (msg === 'subscribe' || msg === 'unsubscribe') {
-            // If the user has elected to subscribe for messages, flip the bit
-            // and indicate that they have done so.
-            subscriber.subscribed = msg === 'subscribe';
+        if (msg === 'unsubscribe') {
             subscriber.save(function(err) {
                 if (err)
                     return respond('We could not subscribe you - please try '
                         + 'again.');
 
                 // Otherwise, our subscription has been updated
-                var responseMessage = 'You are now subscribed for updates.';
-                if (!subscriber.subscribed)
-                    responseMessage = 'You have unsubscribed. Text "subscribe"'
+                if (!subscriber.subscribed) {
+                    var responseMessage = 'You have unsubscribed. Text "subscribe"'
                         + ' to start receiving updates again.';
 
-                respond(responseMessage);
+                    respond(responseMessage);
+                } else {
+                    respond("We ran into issues, please try again")
+                }
             });
         } else {
-            // If we don't recognize the command, text back with the list of
-            // available commands
-            var responseMessage = 'Sorry, we didn\'t understand that. '
-                + 'available commands are: subscribe or unsubscribe';
+            var responseMessage;
+            //This is where we process the states
+            if (msg === 'subscribe') {
+                // If the user has elected to subscribe for messages, flip the bit
+                // and indicate that they have done so.
+                subscriber.subscribed = msg === 'subscribe';
+                subscriber.state = '0';
+                subscriber.waiting = false;
+                subscriber.save(function (err) {
+                    if (err)
+                        return respond('We could not subscribe you - please try '
+                            + 'again.');
 
-            respond(responseMessage);
+                    // Otherwise, our subscription has been updated
+                    responseMessage = 'You are now subscribed for updates.';
+                });
+            }
+
+            /***
+             *
+             *
+             *
+             *
+             * @type {SubscriberSchema.state|{type, default}|string|Object}
+             */
+
+            //Get the json object based on the state
+            if (!subscriber.waiting) {
+                var question = getQuestionBasedOnState(subscriber.state)
+
+                if (!responseMessage) {
+                    respond(responseMessage);
+                }
+                Subscriber.sendQuestionMessage(subscriber, question, function(err) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log('successes', 'Messages on their way!');
+                    }
+                });
+            } else {
+                var answerFromUser = msg;
+                var answers;
+                switch (subcriber.state) {
+                    case 0:
+                        answers = {"1" : "1","0":"1"};
+                        break;
+                    case 1:
+                        answers = {"1" : "2","0":"3"};
+                        break;
+                    case 2:
+                        answers = {};
+                        break;
+                    case 3:
+                        answers = {"1" : "4","0":"9"};
+                        break;
+                    case 4:
+                        answers = {"1" : "5","0":"8"};
+                        break;
+                    case 5:
+                        answers = {"1" : "6","0":"7"};
+                        break;
+                    case 6:
+                        answers = {};
+                        break;
+                    case 7:
+                        answers = {}
+                        break;
+                    case 8:
+                        answers = {"1" : "7"}
+                        break;
+                    case 9:
+                        answers = {"1" : "7"}
+                        break;
+                    default:
+                        break;
+                }
+
+                if (msg == "1" || msg == "0") {
+                    var nextState = answers[msg];
+                    var question = getQuestionBasedOnState(nextState);
+
+                    Subscriber.sendQuestionMessage(subscriber, question, function(err) {
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            console.log('successes', 'Messages on their way!');
+                        }
+                    });
+
+                } else {
+                    var responseMessage = 'Sorry, we didn\'t understand that. '
+                        + 'available commands are: subscribe or unsubscribe';
+
+                    respond(responseMessage);
+                }
+            }
         }
+    }
+
+    function getQuestionBasedOnState(state) {
+        var question;
+;        switch (state) {
+            case 0:
+                question = "Is it for you or for your friend?";
+                break;
+            case 1:
+                question = "Is there an immediate danger?";
+                break;
+            case 2:
+                question = "Call the Police";
+                break;
+            case 3:
+                question = "Does your friend know that she is being abused?";
+                break;
+            case 4:
+                question = "Describe the pain. 1. Physical pain  2. Emotional pain";
+                break;
+            case 5:
+                question = "Physical Pain. Tell your friend, you're here to help. I can't imagine how scary this is for you. 1. Defend yourself  2. Talk to a Counsellor 475";
+                break;
+            case 6:
+                question = "Remember the phrase SING S - Stomach ->Elbow it I- Instep on the foot N- Nose->Punch it G- Groin -> Punch it";
+                break;
+            case 7:
+                question = " Talk to a Counsellor 475"
+                break;
+            case 8:
+                question = "Emotional Pain. Tell your friend, you're here to help. I can't imagine how scary this is for you. 1. Recognize that the abuse exists. 2. Ask for support, talk to a counsellor, talk to a friend 3 .Break the Cycle - See yourself in a +ve light";
+                break;
+            case 9:
+                question = "I know it's difficult to discuss, but please know you can talk to me about anything. U r not alone. I care abt u & m here 4 u no matter wat. Talk about 1 incident that u noticed";
+                break;
+            default:
+                break;
+        }
+        return question;
     }
 
     // Set Content-Type response header and render XML (TwiML) response in a 
