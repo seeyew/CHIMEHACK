@@ -25,7 +25,7 @@ exports.webhook = function(request, response) {
 
                 // We're signed up but not subscribed - prompt to subscribe
                 respond('Thanks for contacting us! Text "subscribe" to ' +
-                    + 'receive updates via text message.');
+                     'receive updates via text message.');
             });
         } else {
             // For an existing user, process any input message they sent and
