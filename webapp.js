@@ -6,9 +6,23 @@ var flash = require('connect-flash');
 var morgan = require('morgan');
 var config = require('./config');
 
+//Basic Auth
+var auth = require('http-auth');
+//Minimal password
+var basic = auth.basic({
+        realm: "Simon Area."
+    }, function (username, password, callback) { // Custom authentication method.
+        callback(username === "seeyew" && password === "140help140");
+    }
+);
+
+
 // Create Express web app
 var app = express();
 app.set('view engine', 'jade');
+
+// Authenticator
+app.use(auth.connect(basic));
 
 // Use morgan for HTTP request logging
 app.use(morgan('combined'));
