@@ -93,6 +93,15 @@ exports.webhook = function(request, response) {
                 if (!responseMessage) {
                     respond(responseMessage);
                 }
+                subscriber.waiting = true;
+                subscriber.save(function (err) {
+                    if (err)
+                        return respond('We could not subscribe you - please try '
+                            + 'again.');
+
+                    // Otherwise, our subscription has been updated
+                    responseMessage = 'You are now subscribed for updates.';
+                });
                 Subscriber.sendQuestionMessage(subscriber, question, function(err) {
                     if (err) {
                         console.log(err);
@@ -103,24 +112,24 @@ exports.webhook = function(request, response) {
             } else {
                 var answerFromUser = msg;
                 var answers;
-                switch (subcriber.state) {
+                switch (subscriber.state) {
                     case 0:
-                        answers = {"1" : "1","0":"1"};
+                        answers = {"1" : 1,"0": 1};
                         break;
                     case 1:
-                        answers = {"1" : "2","0":"3"};
+                        answers = {"1" : 2,"0":3};
                         break;
                     case 2:
                         answers = {};
                         break;
                     case 3:
-                        answers = {"1" : "4","0":"9"};
+                        answers = {"1" : 4,"0":9};
                         break;
                     case 4:
-                        answers = {"1" : "5","0":"8"};
+                        answers = {"1" : 5,"0":8};
                         break;
                     case 5:
-                        answers = {"1" : "6","0":"7"};
+                        answers = {"1" : 6,"0":7};
                         break;
                     case 6:
                         answers = {};
@@ -129,10 +138,10 @@ exports.webhook = function(request, response) {
                         answers = {}
                         break;
                     case 8:
-                        answers = {"1" : "7"}
+                        answers = {"1" : 7}
                         break;
                     case 9:
-                        answers = {"1" : "7"}
+                        answers = {"1" : 7}
                         break;
                     default:
                         break;
@@ -141,7 +150,18 @@ exports.webhook = function(request, response) {
                 if (msg == "1" || msg == "0") {
                     var nextState = answers[msg];
                     var question = getQuestionBasedOnState(nextState);
+                    subscriber.state = nextState;
+                    subscriber.waiting = true;
+                    subscriber.save(function (err) {
+                        if (err)
+                            return respond('We could not subscribe you - please try '
+                                + 'again.');
 
+                        // Otherwise, our subscription has been updated
+                        responseMessage = 'You are now subscribed for updates.';
+                    });
+                    
+                    
                     Subscriber.sendQuestionMessage(subscriber, question, function(err) {
                         if (err) {
                             console.log(err);
@@ -162,24 +182,24 @@ exports.webhook = function(request, response) {
 
     function getQuestionBasedOnState(state) {
         var question;
-;        switch (state) {
+        switch (state) {
             case 0:
-                question = "Is it for you or for your friend?";
+                question = "Is it for you: Press 1 or for your friend? Press: 0";
                 break;
             case 1:
-                question = "Is there an immediate danger?";
+                question = "Is there an immediate danger? Press 1: Yes, Press 0: No";
                 break;
             case 2:
                 question = "Call the Police";
                 break;
             case 3:
-                question = "Does your friend know that she is being abused?";
+                question = "Does your friend know that she is being abused? Press 1: Yes, Press 0: No";
                 break;
             case 4:
                 question = "Describe the pain. 1. Physical pain  2. Emotional pain";
                 break;
             case 5:
-                question = "Physical Pain. Tell your friend, you're here to help. I can't imagine how scary this is for you. 1. Defend yourself  2. Talk to a Counsellor 475";
+                question = "Physical Pain. Tell your friend, you're here to help. I can't imagine how scary this is for you. 1. Defend yourself  0. Talk to a Counsellor 475";
                 break;
             case 6:
                 question = "Remember the phrase SING S - Stomach ->Elbow it I- Instep on the foot N- Nose->Punch it G- Groin -> Punch it";
@@ -194,6 +214,8 @@ exports.webhook = function(request, response) {
                 question = "I know it's difficult to discuss, but please know you can talk to me about anything. U r not alone. I care abt u & m here 4 u no matter wat. Talk about 1 incident that u noticed";
                 break;
             default:
+            	question= "error";
+
                 break;
         }
         return question;

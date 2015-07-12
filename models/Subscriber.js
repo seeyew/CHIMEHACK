@@ -22,7 +22,7 @@ var SubscriberSchema = new mongoose.Schema({
 
 });
 
-SubscriberSchema.static.sendQuestionMessage = function(subscriber, message, callback) {
+SubscriberSchema.statics.sendQuestionMessage = function(subscriber, message, callback) {
     var options = {
         to: subscriber.phone,
         from: config.twilioNumber,
