@@ -5,6 +5,7 @@ var config = require('./config');
 // Initialize database connection - throws if database connection can't be 
 // established
 mongoose.connect(config.mongoUrl);
+console.log(config.mongoUrl);
 
 // Create Express web app
 var app = require('./webapp');
