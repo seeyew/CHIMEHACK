@@ -10,10 +10,41 @@ var SubscriberSchema = new mongoose.Schema({
     subscribed: {
         type: Boolean,
         default: false
+    },
+    state : {
+        type: Number,
+        default: 0
+    },
+    waiting : {
+        type: Boolean,
+        default: false
     }
+
 });
 
-// Static function to send a message to all current subscribers
+SubscriberSchema.statics.sendQuestionMessage = function(subscriber, message, callback) {
+    var options = {
+        to: subscriber.phone,
+        from: config.twilioNumber,
+        body: message
+    };
+    // Send the message!
+    client.sendMessage(options, function(err, response) {
+        if (err) {
+            // Just log it for now
+            console.log("For some reason we can't send it " + err)
+            console.error(err);
+        } else {
+            // Log the last few digits of a phone number
+            var masked = subscriber.phone.substr(0,
+                subscriber.phone.length - 5);
+            masked += '*****';
+            console.log('Message sent to ' + masked);
+        }
+    });
+}
+
+// Static function to send a message to all current subscrgit@github.com:priyakot/CHIMEHACK.gitibers
 SubscriberSchema.statics.sendMessage = function(message, url, callback) {
     // Find all subscribed users
     Subscriber.find({

@@ -1,5 +1,6 @@
 var pages = require('./pages');
 var message = require('./message');
+var voice = require('./voice');
 
 // Map routes to controller functions
 module.exports = function(app) {
@@ -12,4 +13,5 @@ module.exports = function(app) {
 
     // Handle form submission and send messages to subscribers
     app.post('/message/send', message.sendMessages);
+    app.post('/voice', voice.joinconference);
 };
