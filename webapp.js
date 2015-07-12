@@ -22,7 +22,7 @@ var app = express();
 app.set('view engine', 'jade');
 
 // Authenticator
-app.use(auth.connect(basic));
+//app.use(auth.connect(basic));
 
 // Use morgan for HTTP request logging
 app.use(morgan('combined'));
