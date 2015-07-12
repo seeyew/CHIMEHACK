@@ -31,8 +31,11 @@ app.use(session({
 // Use connect-flash to persist informational messages across redirects
 app.use(flash());
 
+app.use(express.static(path.join(__dirname, 'public/index.html')));
+
 // Configure application routes
 require('./controllers/router')(app);
+
 
 // Handle 404
 app.use(function (request, response, next) {

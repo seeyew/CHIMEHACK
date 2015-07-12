@@ -184,7 +184,7 @@ exports.webhook = function(request, response) {
         var question;
         switch (state) {
             case 0:
-                question = "Is it for you: Press 1 or for your friend? Press: 0";
+                question = "Is it for you? : Press 1 or for your friend? : Press 0";
                 break;
             case 1:
                 question = "Is there an immediate danger? Press 1: Yes, Press 0: No";
@@ -193,25 +193,25 @@ exports.webhook = function(request, response) {
                 question = "Call the Police";
                 break;
             case 3:
-                question = "Does your friend know that she is being abused? Press 1: Yes, Press 0: No";
+                question = "Does your friend know that she is being abused? Press 1: Yes, Press 0: No Press 2: Not sure";
                 break;
             case 4:
-                question = "Describe the pain. 1. Physical pain  2. Emotional pain";
+                question = "Describe the pain. Press 1: Physical pain  Press 0: Emotional pain";
                 break;
             case 5:
-                question = "Physical Pain. Tell your friend, you're here to help. I can't imagine how scary this is for you. 1. Defend yourself  0. Talk to a Counsellor 475";
+                question = "Physical Pain. Tell your friend, you're here to help. I can't imagine how scary this is for you. Press 1: Learn self- defence  Press 0: Talk to a Counsellor (646) 846-help";
                 break;
             case 6:
-                question = "Remember the phrase SING S - Stomach ->Elbow it I- Instep on the foot N- Nose->Punch it G- Groin -> Punch it";
+                question = "Remember the phrase SING S:Stomach -> Elbow it I:Instep on the foot N : Nose->Punch it G- Groin : Punch it";
                 break;
             case 7:
-                question = " Talk to a Counsellor 475"
+                question = " Talk to a Counsellor (646) 846-4357"
                 break;
             case 8:
-                question = "Emotional Pain. Tell your friend, you're here to help. I can't imagine how scary this is for you. 1. Recognize that the abuse exists. 2. Ask for support, talk to a counsellor, talk to a friend 3 .Break the Cycle - See yourself in a +ve light";
+                question = "Emotional Pain. Tell your friend, you're here to help. I can't imagine how scary this is for you. 1. Recognize that the abuse exists. 2. Ask for support, talk to a counsellor, talk to a friend 3 .Break the Cycle - See yourself in a +ve light. Press 1";
                 break;
             case 9:
-                question = "I know it's difficult to discuss, but please know you can talk to me about anything. U r not alone. I care abt u & m here 4 u no matter wat. Talk about 1 incident that u noticed";
+                question = "I know it's difficult to discuss, but please know you can talk to me about anything. U r not alone. I care abt u & m here 4 u no matter wat. Talk about 1 incident that u noticed . Press 1";
                 break;
             default:
             	question= "error";
