@@ -16,17 +16,17 @@ cfg.secret = process.env.APP_SECRET || 'keyboard cat';
 //cfg.accountSid = process.env.TWILIO_ACCOUNT_SID;
 //cfg.authToken = process.env.TWILIO_AUTH_TOKEN;
 
-cfg.accountSid = 'ACbecdea3184337764026820082dc6c6d6';
-cfg.authToken = 'fa1ca923f9cb050e0baf341368a0c4e6'; 
+cfg.accountSid = 'AC97faf6600f8dc7ab65ba103d2d7f2657';
+cfg.authToken = 'bbd1a0c8e75d17ce5f14eff9b02b5ba5';
 
 // A Twilio number you control - choose one from:
 // https://www.twilio.com/user/account/phone-numbers/incoming
 // Specify in E.164 format, e.g. "+16519998877"
-cfg.twilioNumber = "+16468464357";
+cfg.twilioNumber = "+16506812354";
 
 // MongoDB connection string - MONGO_URL is for local dev,
 // MONGOLAB_URI is for the MongoLab add-on for Heroku deployment
-cfg.mongoUrl = process.env.MONGOLAB_URI || process.env.MONGO_URL || "mongodb://localhost/SubscriberSchema"
+cfg.mongoUrl = process.env.MONGOLAB_URI || 'mongodb://localhost/SubscriberSchema'
 
 // Export configuration object
 module.exports = cfg;
